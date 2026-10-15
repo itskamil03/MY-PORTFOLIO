@@ -180,7 +180,8 @@ function ProficiencyBar({ value }: { value: number }) {
   return (
     <div ref={ref} className="pt-4 border-t border-white/[0.06]">
       <div className="flex items-center justify-between text-[11px] font-mono text-slate-500 mb-2">
-        <span>Proficiency</span>
+        <span className="hidden sm:inline">Proficiency</span>
+        <span className="sm:hidden">Level</span>
         <motion.span className="font-semibold text-slate-200">{label}</motion.span>
       </div>
       <div className="h-1.5 rounded-full bg-white/[0.05] overflow-hidden">
@@ -211,7 +212,7 @@ function SkillCard({ skill }: { skill: Skill }) {
       whileHover={{ y: -4 }}
       transition={{ type: 'spring', stiffness: 300, damping: 22 }}
       onMouseMove={onMove}
-      className="group relative flex flex-col justify-between p-5 rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-[#2cdd9c]/30 hover:shadow-[0_20px_40px_-20px_rgba(44,221,156,0.25)]"
+      className="group relative flex flex-col justify-between p-4 sm:p-5 rounded-2xl border border-white/[0.07] bg-white/[0.02] overflow-hidden transition-[border-color,box-shadow] duration-300 hover:border-[#2cdd9c]/30 hover:shadow-[0_20px_40px_-20px_rgba(44,221,156,0.25)]"
     >
       {/* Cursor spotlight */}
       <span
@@ -220,25 +221,25 @@ function SkillCard({ skill }: { skill: Skill }) {
       />
 
       <div className="relative">
-        <div className="flex items-center justify-between gap-3 mb-4">
-          <div className="w-11 h-11 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center transition-all duration-300 group-hover:border-[#2cdd9c]/30 group-hover:bg-[#2cdd9c]/[0.06] group-hover:scale-110 group-hover:-rotate-3">
-            <Logo className="w-6 h-6" />
+        <div className="flex items-center justify-between gap-2 sm:gap-3 mb-3 sm:mb-4">
+          <div className="w-9 h-9 sm:w-11 sm:h-11 rounded-xl bg-white/[0.04] border border-white/[0.08] flex items-center justify-center transition-all duration-300 group-hover:border-[#2cdd9c]/30 group-hover:bg-[#2cdd9c]/[0.06] group-hover:scale-110 group-hover:-rotate-3">
+            <Logo className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
 
           {skill.highlight ? (
-            <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#2cdd9c]/10 text-[#2cdd9c] text-[10px] font-mono font-semibold border border-[#2cdd9c]/20">
+            <span title="Core Stack" className="inline-flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full bg-[#2cdd9c]/10 text-[#2cdd9c] text-[10px] font-mono font-semibold border border-[#2cdd9c]/20">
               <Zap className="w-2.5 h-2.5" />
-              Core Stack
+              <span className="hidden sm:inline">Core Stack</span>
             </span>
           ) : (
-            <span className="text-[10px] font-mono text-slate-500">Production</span>
+            <span className="hidden sm:inline text-[10px] font-mono text-slate-500">Production</span>
           )}
         </div>
 
-        <h4 className="font-display font-semibold text-[15px] text-white tracking-tight transition-colors duration-300 group-hover:text-[#2cdd9c]">
+        <h4 className="font-display font-semibold text-[13px] sm:text-[15px] leading-snug text-white tracking-tight transition-colors duration-300 group-hover:text-[#2cdd9c]">
           {skill.name}
         </h4>
-        <p className="mt-1 mb-5 text-xs text-slate-400 leading-relaxed">{skill.level}</p>
+        <p className="mt-1 mb-4 sm:mb-5 text-[11px] sm:text-xs text-slate-400 leading-relaxed">{skill.level}</p>
       </div>
 
       <div className="relative">
@@ -369,7 +370,7 @@ export function SkillsSection() {
               </motion.div>
 
               {/* Skill cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 sm:gap-4">
                 {current.skills.map((skill) => (
                   <SkillCard key={skill.name} skill={skill} />
                 ))}

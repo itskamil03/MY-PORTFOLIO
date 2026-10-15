@@ -243,7 +243,7 @@ function ProjectShowcase({ project, reverse = false, onOpen }: ProjectShowcasePr
         </div>
 
         {/* Actions pinned to the bottom so every card lines up */}
-        <div className="mt-auto pt-5 flex items-center gap-2.5">
+        <div className="mt-auto pt-5 flex flex-wrap items-center gap-2.5">
           {primaryLink && (
             <a
               href={primaryLink.url}

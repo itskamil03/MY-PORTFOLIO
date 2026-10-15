@@ -66,7 +66,7 @@ function TimelineItem({ job }: { job: Job }) {
   };
 
   return (
-    <div ref={ref} className="relative grid grid-cols-[32px_1fr] lg:grid-cols-[180px_40px_1fr] gap-x-5 lg:gap-x-6">
+    <div ref={ref} className="relative grid grid-cols-[32px_1fr] lg:grid-cols-[180px_40px_1fr] gap-x-3 sm:gap-x-5 lg:gap-x-6">
       {/* Meta column (desktop) */}
       <motion.div
         initial={{ opacity: 0, x: -20 }}
@@ -114,7 +114,7 @@ function TimelineItem({ job }: { job: Job }) {
         animate={inView ? 'show' : 'hidden'}
         whileHover={{ y: -4 }}
         onMouseMove={onMove}
-        className="group relative min-w-0 rounded-3xl border border-white/[0.07] bg-white/[0.02] p-6 sm:p-8 overflow-hidden transition-[border-color,box-shadow] duration-500 hover:border-[#2cdd9c]/25 hover:shadow-[0_30px_60px_-30px_rgba(44,221,156,0.3)]"
+        className="group relative min-w-0 rounded-3xl border border-white/[0.07] bg-white/[0.02] p-5 sm:p-8 overflow-hidden transition-[border-color,box-shadow] duration-500 hover:border-[#2cdd9c]/25 hover:shadow-[0_30px_60px_-30px_rgba(44,221,156,0.3)]"
       >
         {/* Cursor spotlight */}
         <span
@@ -133,8 +133,8 @@ function TimelineItem({ job }: { job: Job }) {
         <div className="relative">
           {/* Header */}
           <motion.div variants={itemVariants} className="flex items-start justify-between gap-4">
-            <div className="flex items-center gap-4 min-w-0">
-              <span className="shrink-0 w-12 h-12 rounded-2xl bg-gradient-to-br from-[#2cdd9c]/20 to-[#2cdd9c]/5 border border-[#2cdd9c]/25 flex items-center justify-center font-display font-bold text-[15px] text-[#2cdd9c] transition-transform duration-500 group-hover:rotate-[-6deg] group-hover:scale-105">
+            <div className="flex items-center gap-3 sm:gap-4 min-w-0">
+              <span className="shrink-0 w-10 h-10 sm:w-12 sm:h-12 rounded-2xl bg-gradient-to-br from-[#2cdd9c]/20 to-[#2cdd9c]/5 border border-[#2cdd9c]/25 flex items-center justify-center font-display font-bold text-[15px] text-[#2cdd9c] transition-transform duration-500 group-hover:rotate-[-6deg] group-hover:scale-105">
                 {initials(job.org)}
               </span>
               <div className="min-w-0">
@@ -146,7 +146,7 @@ function TimelineItem({ job }: { job: Job }) {
               </div>
             </div>
             {isCurrent && (
-              <span className="shrink-0 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2cdd9c]/10 border border-[#2cdd9c]/25 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#2cdd9c]">
+              <span className="shrink-0 hidden sm:inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#2cdd9c]/10 border border-[#2cdd9c]/25 text-[10px] font-mono font-semibold uppercase tracking-wider text-[#2cdd9c]">
                 <span className="w-1.5 h-1.5 rounded-full bg-[#2cdd9c] animate-pulse" />
                 Current
               </span>
@@ -158,6 +158,12 @@ function TimelineItem({ job }: { job: Job }) {
             variants={itemVariants}
             className="lg:hidden mt-4 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-400"
           >
+            {isCurrent && (
+              <span className="sm:hidden inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#2cdd9c]/10 border border-[#2cdd9c]/25 font-mono text-[10px] font-semibold uppercase tracking-wider text-[#2cdd9c]">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#2cdd9c] animate-pulse" />
+                Current
+              </span>
+            )}
             <span className="inline-flex items-center gap-1.5">
               <Calendar className="w-3.5 h-3.5 text-[#2cdd9c]" />
               {job.time}

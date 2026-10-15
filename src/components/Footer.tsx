@@ -232,9 +232,9 @@ export function Footer() {
           </motion.div>
 
           {/* Navigation */}
-          <motion.nav variants={fadeUp} custom={2} aria-label="Footer" className="lg:col-span-2">
+          <motion.nav variants={fadeUp} custom={2} aria-label="Footer" className="col-span-2 sm:col-span-1 lg:col-span-2">
             <ColumnTitle>Navigate</ColumnTitle>
-            <ul className="mt-4 space-y-2.5">
+            <ul className="mt-4 grid grid-cols-2 sm:grid-cols-1 gap-x-4 gap-y-2.5">
               {NAV_LINKS.map((link) => (
                 <li key={link.id}>
                   <a
@@ -243,9 +243,9 @@ export function Footer() {
                       e.preventDefault();
                       scrollToId(link.id);
                     }}
-                    className="group inline-flex items-center gap-1.5 text-sm text-slate-400 hover:text-white transition-colors"
+                    className="group inline-flex items-center text-sm text-slate-400 hover:text-white transition-colors"
                   >
-                    <span className="w-0 h-px bg-[#2cdd9c] transition-all duration-300 group-hover:w-3" />
+                    <span className="w-0 h-px bg-[#2cdd9c] transition-all duration-300 group-hover:w-3 group-hover:mr-1.5" />
                     {link.label}
                   </a>
                 </li>
@@ -254,7 +254,7 @@ export function Footer() {
           </motion.nav>
 
           {/* Contact */}
-          <motion.div variants={fadeUp} custom={3} className="lg:col-span-3">
+          <motion.div variants={fadeUp} custom={3} className="col-span-2 sm:col-span-1 lg:col-span-3">
             <ColumnTitle>Contact</ColumnTitle>
             <ul className="mt-4 space-y-3 text-sm">
               <li>
@@ -320,7 +320,7 @@ export function Footer() {
                     <span className="block text-xs text-slate-500">Explore my portfolio via CLI</span>
                   </span>
                 </span>
-                <kbd className="shrink-0 px-2 py-1 rounded-md border border-white/10 bg-white/[0.04] font-mono text-[10px] text-slate-400">
+                <kbd className="hidden sm:inline-block shrink-0 px-2 py-1 rounded-md border border-white/10 bg-white/[0.04] font-mono text-[10px] text-slate-400">
                   Ctrl K
                 </kbd>
               </button>
@@ -336,7 +336,7 @@ export function Footer() {
           whileInView={{ y: '0%', opacity: 1 }}
           viewport={{ once: true, amount: 0.3 }}
           transition={{ duration: 1.2, ease: EASE }}
-          className="font-display font-black uppercase leading-[0.8] tracking-[-0.04em] text-center whitespace-nowrap text-[clamp(3rem,15.5vw,11.5rem)] bg-gradient-to-b from-white/[0.09] to-white/0 bg-clip-text text-transparent"
+          className="font-display font-black uppercase leading-[0.8] tracking-[-0.04em] text-center whitespace-nowrap text-[clamp(2.5rem,12.5vw,9rem)] bg-gradient-to-b from-white/[0.09] to-white/0 bg-clip-text text-transparent"
         >
           Kamil Akhtar
         </motion.p>

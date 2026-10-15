@@ -1,193 +1,122 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
+import { AnimatePresence, motion } from 'framer-motion';
 import { sounds } from '@/lib/sound';
-import { Sparkles, Terminal } from 'lucide-react';
-
-const GREETINGS = [
-  { text: 'Hello', lang: 'English' },
-  { text: 'नमस्ते', lang: 'Hindi' },
-  { text: 'السلام عليكم', lang: 'Urdu / Arabic' },
-  { text: 'Bonjour', lang: 'French' },
-  { text: 'Hola', lang: 'Spanish' },
-  { text: 'Welcome', lang: 'Portfolio' },
-];
 
 interface WelcomeIntroProps {
   onComplete?: () => void;
 }
 
+// Single-stroke cursive "hello" so it can be drawn like handwriting
+const HELLO_PATH =
+  'M8 98 C 22 94, 42 78, 52 56 C 62 34, 62 12, 50 12 C 38 12, 34 50, 32 112 ' +
+  'C 36 92, 46 76, 58 76 C 70 76, 70 92, 68 102 C 66 112, 74 114, 84 108 ' +
+  'C 96 101, 110 92, 112 82 C 114 70, 100 68, 94 80 C 88 92, 92 110, 108 110 C 120 110, 132 100, 140 90 ' +
+  'C 152 74, 164 48, 164 30 C 164 14, 150 14, 148 34 C 146 54, 144 84, 148 100 C 151 112, 164 112, 174 102 ' +
+  'C 186 86, 196 56, 196 32 C 196 14, 182 14, 180 34 C 178 54, 176 84, 180 100 C 183 112, 196 112, 206 102 ' +
+  'C 212 94, 218 82, 230 78 C 246 74, 256 86, 252 100 C 248 114, 228 116, 222 104 C 216 92, 226 78, 240 78 C 252 78, 266 84, 286 74';
+
+const EASE = [0.16, 1, 0.3, 1] as const;
+const DRAW_SECONDS = 2.2;
+const HOLD_MS = 700;
+const EXIT_MS = 900;
+
 export function WelcomeIntro({ onComplete }: WelcomeIntroProps) {
-  const [index, setIndex] = useState(0);
-  const [progress, setProgress] = useState(0);
-  const [isExiting, setIsExiting] = useState(false);
-  const [isDone, setIsDone] = useState(false);
-
+  const [visible, setVisible] = useState(true);
+  const finished = useRef(false);
+  // Keep the latest callback without restarting the timers when the parent re-renders
+  const onCompleteRef = useRef(onComplete);
   useEffect(() => {
-    // Prevent scrolling while intro is active
-    document.body.style.overflow = 'hidden';
-
-    // Cycle through greetings
-    const wordInterval = setInterval(() => {
-      setIndex((prev) => {
-        if (prev < GREETINGS.length - 1) {
-          return prev + 1;
-        }
-        clearInterval(wordInterval);
-        return prev;
-      });
-    }, 280);
-
-    // Progress counter 0 to 100%
-    const startTime = Date.now();
-    const duration = 2000;
-
-    const progressInterval = setInterval(() => {
-      const elapsed = Date.now() - startTime;
-      const pct = Math.min(100, Math.round((elapsed / duration) * 100));
-      setProgress(pct);
-
-      if (pct >= 100) {
-        clearInterval(progressInterval);
-        // Start exit animation after reaching 100%
-        setTimeout(() => {
-          setIsExiting(true);
-          try {
-            sounds.playSuccess();
-          } catch {
-            // fallback
-          }
-          setTimeout(() => {
-            setIsDone(true);
-            document.body.style.overflow = '';
-            if (onComplete) onComplete();
-          }, 800);
-        }, 400);
-      }
-    }, 25);
-
-    // Listen for ESC key to skip
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        skipIntro();
-      }
-    };
-    window.addEventListener('keydown', handleKeyDown);
-
-    return () => {
-      clearInterval(wordInterval);
-      clearInterval(progressInterval);
-      window.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
-    };
+    onCompleteRef.current = onComplete;
   }, [onComplete]);
 
-  const skipIntro = () => {
-    setIsExiting(true);
-    setTimeout(() => {
-      setIsDone(true);
+  const finish = useCallback(() => {
+    if (finished.current) return;
+    finished.current = true;
+    try {
+      sounds.playSuccess();
+    } catch {
+      // audio may be blocked before the first interaction
+    }
+    setVisible(false);
+  }, []);
+
+  useEffect(() => {
+    document.body.style.overflow = 'hidden';
+    const timer = setTimeout(finish, DRAW_SECONDS * 1000 + HOLD_MS);
+    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && finish();
+    window.addEventListener('keydown', onKey);
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener('keydown', onKey);
       document.body.style.overflow = '';
-      if (onComplete) onComplete();
-    }, 400);
-  };
-
-  if (isDone) return null;
-
-  const current = GREETINGS[index];
-  const isFinal = index === GREETINGS.length - 1;
+    };
+  }, [finish]);
 
   return (
-    <div
-      className={`fixed inset-0 z-[100] flex flex-col items-center justify-between bg-[#04090b] text-white select-none transition-transform duration-700 ease-[cubic-bezier(0.76,0,0.24,1)] ${
-        isExiting ? '-translate-y-full' : 'translate-y-0'
-      }`}
-      style={{ willChange: 'transform' }}
+    <AnimatePresence
+      onExitComplete={() => {
+        document.body.style.overflow = '';
+        onCompleteRef.current?.();
+      }}
     >
-      {/* Background ambient lighting */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/15 via-cyan-500/10 to-sky-500/10 rounded-full blur-[120px] animate-pulse-slow" />
-        <div 
-          className="absolute inset-0 opacity-[0.03]"
-          style={{
-            backgroundImage: `radial-gradient(rgba(255,255,255,0.4) 1px, transparent 1px)`,
-            backgroundSize: '24px 24px'
-          }}
-        />
-      </div>
-
-      {/* Top Bar: System Status & Skip Button */}
-      <div className="w-full max-w-6xl mx-auto px-6 pt-8 flex items-center justify-between relative z-10">
-        <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-400 to-cyan-500 p-[1px] shadow-lg shadow-emerald-500/20">
-            <div className="w-full h-full bg-[#0a1015] rounded-[11px] flex items-center justify-center">
-              <span className="font-mono font-bold text-xs text-transparent bg-clip-text bg-gradient-to-r from-emerald-300 to-cyan-300">
-                KA
-              </span>
-            </div>
-          </div>
-          <div className="flex items-center gap-2 text-xs font-mono text-slate-400">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-            <span className="text-slate-300">Mohammad Kamil Akhtar</span>
-          </div>
-        </div>
-
-        <button
-          onClick={skipIntro}
-          className="group flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-emerald-500/40 text-xs font-mono text-slate-400 hover:text-white transition-all cursor-pointer"
+      {visible && (
+        <motion.div
+          key="intro"
+          role="presentation"
+          onClick={finish}
+          initial={{ opacity: 1 }}
+          exit={{ opacity: 0, y: '-6%', transition: { duration: EXIT_MS / 1000, ease: EASE } }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-[#04090b] select-none cursor-pointer"
         >
-          <span>Skip</span>
-          <kbd className="px-1.5 py-0.5 rounded bg-black/40 text-[10px] text-slate-500 group-hover:text-slate-300 border border-white/10">
-            Esc
-          </kbd>
-        </button>
-      </div>
-
-      {/* Center: Animated Greeting Lockup */}
-      <div className="flex flex-col items-center justify-center text-center px-4 relative z-10">
-        <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white/[0.03] border border-white/[0.08] text-xs font-mono text-emerald-400 mb-6">
-          <Sparkles className="w-3.5 h-3.5 animate-spin" style={{ animationDuration: '6s' }} />
-          <span>System Initialized</span>
-        </div>
-
-        {/* Big Greeting Word */}
-        <div className="relative min-h-[90px] sm:min-h-[120px] flex items-center justify-center">
-          <h1 
-            key={current.text}
-            className="text-5xl sm:text-7xl md:text-8xl font-extrabold tracking-tight text-white flex items-center gap-3 sm:gap-4 animate-in fade-in zoom-in-95 duration-300"
-          >
-            <span className="inline-block w-3.5 h-3.5 sm:w-5 sm:h-5 rounded-full bg-emerald-400 shadow-[0_0_20px_#34d399] animate-pulse" />
-            <span className={isFinal ? 'text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400' : 'text-white'}>
-              {current.text}
-            </span>
-          </h1>
-        </div>
-
-        {/* Subtitle tag */}
-        <p className="mt-4 text-xs sm:text-sm font-mono text-slate-400 tracking-widest uppercase">
-          {isFinal ? 'Full Stack Developer &bull; Portfolio 2026' : current.lang}
-        </p>
-      </div>
-
-      {/* Bottom: Progress Bar & Counter */}
-      <div className="w-full max-w-xl mx-auto px-6 pb-12 relative z-10">
-        <div className="flex items-center justify-between text-xs font-mono text-slate-400 mb-3">
-          <div className="flex items-center gap-2">
-            <Terminal className="w-3.5 h-3.5 text-cyan-400" />
-            <span>Loading modules...</span>
-          </div>
-          <span className="text-emerald-400 font-bold tabular-nums">{progress}%</span>
-        </div>
-
-        {/* Progress bar track */}
-        <div className="h-1.5 w-full bg-white/[0.06] rounded-full overflow-hidden border border-white/10 p-[1px]">
+          {/* Soft vignette glow behind the word */}
           <div
-            className="h-full bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 rounded-full transition-all duration-75 ease-out shadow-[0_0_12px_rgba(52,211,153,0.8)]"
-            style={{ width: `${progress}%` }}
+            aria-hidden="true"
+            className="absolute inset-0 bg-[radial-gradient(ellipse_50%_40%_at_50%_50%,rgba(44,221,156,0.07),transparent_70%)]"
           />
-        </div>
-      </div>
-    </div>
+
+          <p className="sr-only">Hello</p>
+          <motion.svg
+            viewBox="0 0 300 130"
+            fill="none"
+            aria-hidden="true"
+            initial={{ opacity: 1, scale: 1 }}
+            exit={{ scale: 0.96 }}
+            className="relative w-[min(78vw,440px)] h-auto drop-shadow-[0_0_18px_rgba(44,221,156,0.25)]"
+          >
+            <motion.path
+              d={HELLO_PATH}
+              stroke="#2cdd9c"
+              strokeWidth={6}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              initial={{ pathLength: 0 }}
+              animate={{ pathLength: 1 }}
+              transition={{ duration: DRAW_SECONDS, ease: [0.65, 0, 0.35, 1], delay: 0.2 }}
+            />
+          </motion.svg>
+
+          {/* Footer mark */}
+          <div className="absolute bottom-10 sm:bottom-14 left-1/2 -translate-x-1/2 flex flex-col items-center gap-4">
+            <motion.span
+              initial={{ opacity: 0, y: 6 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, ease: EASE, delay: 0.6 }}
+              className="font-mono text-[10px] font-medium uppercase tracking-[0.5em] text-slate-500"
+            >
+              Portfolio MMXXVI
+            </motion.span>
+            <motion.span
+              aria-hidden="true"
+              initial={{ scaleY: 0 }}
+              animate={{ scaleY: 1 }}
+              transition={{ duration: DRAW_SECONDS, ease: [0.65, 0, 0.35, 1], delay: 0.2 }}
+              className="block w-px h-12 origin-top bg-gradient-to-b from-[#2cdd9c] to-transparent"
+            />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
   );
 }
-
-export default WelcomeIntro;

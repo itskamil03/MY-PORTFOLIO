@@ -114,7 +114,7 @@ export function HeroSection(_props: HeroSectionProps) {
   return (
     <section
       id="home"
-      className="relative min-h-screen flex flex-col justify-center pt-28 sm:pt-32 pb-12 overflow-hidden select-none bg-[#04090b]"
+      className="relative min-h-[100svh] flex flex-col justify-center pt-28 sm:pt-32 pb-12 overflow-hidden select-none bg-[#04090b]"
     >
       {/* Background: teal-tinted depth + starfield */}
       <div className="absolute inset-0 pointer-events-none" aria-hidden="true">

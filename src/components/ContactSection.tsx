@@ -28,7 +28,7 @@ const fadeUp: Variants = {
 };
 
 const inputClass =
-  'w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder:text-slate-500 text-sm font-sans transition-[border-color,box-shadow] duration-300 focus:outline-none focus:border-[#2cdd9c]/60 focus:ring-4 focus:ring-[#2cdd9c]/10';
+  'w-full px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] text-white placeholder:text-slate-500 text-base sm:text-sm font-sans transition-[border-color,box-shadow] duration-300 focus:outline-none focus:border-[#2cdd9c]/60 focus:ring-4 focus:ring-[#2cdd9c]/10';
 
 export function ContactSection() {
   const [formData, setFormData] = useState({

@@ -78,7 +78,7 @@ function PortraitCard() {
 
   return (
     <div
-      className="relative mx-auto w-full max-w-[400px] [perspective:1100px]"
+      className="relative mx-auto w-[calc(100%-1.25rem)] sm:w-full max-w-[400px] [perspective:1100px]"
       onPointerEnter={(e) => e.pointerType === 'mouse' && !reduceMotion && setHovered(true)}
       onPointerMove={onMove}
       onPointerLeave={onLeave}
